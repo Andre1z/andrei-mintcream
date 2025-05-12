@@ -9,7 +9,7 @@
  *
  * En la parte de publicaciones se incluye:
  *   - Visualización de la imagen adjunta (si existe) con tamaño máximo ajustado.
- *   - Funcionalidad de zoom al hacer clic en la imagen.
+ *   - Funcionalidad de pop-up (modal) centrado para mostrar la imagen en zoom.
  *   - Formulario de publicación con opción de adjuntar imagen.
  *
  * @package Mintcream
@@ -193,7 +193,7 @@
                             <?php endif; ?>
                             <textarea name="contenido" placeholder="Escribe tu mensaje aquí" required></textarea>
                             <label for="imagen">Insertar imagen (opcional):</label>
-                            <!-- Input file actualizado para admitir los formatos PNG, JPG, JPEG, GIF y WEBP -->
+                            <!-- Input file para admitir PNG, JPG, JPEG, GIF y WEBP -->
                             <input type="file" name="imagen" id="imagen" accept="image/png, image/jpeg, image/gif, image/webp">
                             <small>Solo se permiten archivos PNG, JPG, JPEG, GIF y WEBP.</small>
                             <button type="submit" class="btn-primary">Publicar</button>
@@ -205,15 +205,17 @@
     </div>
 <?php endif; ?>
 
-<!-- Modal para zoom de imagen -->
+<!-- Modal para el pop-up centrado -->
 <div id="imgModal" class="modal">
-    <span class="close-modal">&times;</span>
-    <img class="modal-content" id="modalImg">
+    <div class="modal-content-container">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="modalImg">
+    </div>
 </div>
 
-<!-- Script de validación y zoom de imágenes -->
+<!-- Script de validación y pop-up para zoom -->
 <script>
-// Validación del input file: solo se permiten PNG, JPG, JPEG, GIF y WEBP.
+// Validación del input file: solo se permiten las extensiones indicadas
 document.getElementById('imagen').addEventListener('change', function() {
     var allowedExts = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
     var file = this.files[0];
@@ -226,31 +228,26 @@ document.getElementById('imagen').addEventListener('change', function() {
     }
 });
 
-// Modal para hacer zoom en la imagen al hacer clic
+// Pop-up modal para mostrar la imagen en zoom
 var modal = document.getElementById("imgModal");
 var modalImg = document.getElementById("modalImg");
 var closeModal = document.getElementsByClassName("close-modal")[0];
 
-// Ajustamos los estilos de las imágenes de las publicaciones para que no se vean tan grandes.
+// Añadimos el manejador de clic a cada imagen de publicación
 var postImages = document.querySelectorAll('.post-image-wrapper img');
 postImages.forEach(function(img) {
-    // Se establecen dimensiones máximas en el CSS (si no están definidos en principal.css)
-    img.style.maxWidth = "300px";
-    img.style.maxHeight = "300px";
-    img.style.cursor = "pointer";
-    // Al hacer clic en la imagen se abre el modal con la imagen ampliada.
     img.addEventListener('click', function() {
-        modal.style.display = "flex";
+        modal.style.display = "block";
         modalImg.src = this.src;
     });
 });
 
-// Cerrar el modal cuando se hace clic en la 'X'
+// Cerrar el modal con el botón de cierre
 closeModal.onclick = function() {
     modal.style.display = "none";
 };
 
-// Cerrar el modal al hacer clic fuera de la imagen
+// Cerrar el modal si se hace clic fuera del contenedor de imagen
 modal.addEventListener("click", function(event) {
     if (event.target === modal) {
         modal.style.display = "none";
