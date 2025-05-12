@@ -2,27 +2,27 @@
 /**
  * procesamientodeformularios.php
  *
- * Procesa todas las solicitudes enviadas a través de formularios en la aplicación Mintcream.
- * Las acciones gestionadas incluyen:
- *   - login: Inicio de sesión de usuario.
- *   - logout: Cierre de la sesión.
+ * Procesa todas las solicitudes enviadas mediante formularios en la aplicación Mintcream.
+ * Las acciones incluyen:
+ *   - login: Inicio de sesión.
+ *   - logout: Cierre de sesión.
  *   - register: Registro de un nuevo usuario.
- *   - crear_tema: Creación de un nuevo tema en el foro.
- *   - crear_hilo: Creación de un nuevo hilo dentro de un tema.
- *   - crear_publicacion: Envío de una publicación (mensaje) en un hilo, con opción a adjuntar una imagen.
- *   - panel: Operaciones para el panel de administración (crear, eliminar o actualizar usuarios).
+ *   - crear_tema: Creación de un nuevo tema.
+ *   - crear_hilo: Creación de un nuevo hilo.
+ *   - crear_publicacion: Creación de una publicación con opción de adjuntar imagen.
+ *   - panel: Operaciones en el panel de administración (crear, eliminar o actualizar usuarios).
  *
- * NOTA: En producción se recomienda usar password_hash() y password_verify() para la seguridad en el manejo de contraseñas,
- *       así como sanitizar y validar correctamente todos los datos.
+ * NOTA: En producción se debe usar password_hash()/password_verify() para las contraseñas
+ *       y realizar una validación/ sanitización más exhaustiva de los datos.
  *
- * @package Mintcream
+ * Se ha actualizado la acción "crear_publicacion" para permitir solo archivos con las extensiones:
+ * jpg, jpeg, png, gif y webp.
  */
 
 $accion = $_GET['accion'] ?? '';
 
 switch ($accion) {
 
-    // Inicio de sesión de usuario.
     case 'login':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $usuarioInput = trim($_POST['username'] ?? '');
@@ -30,7 +30,7 @@ switch ($accion) {
             $stmt = $pdo->prepare("SELECT * FROM users WHERE username = :username LIMIT 1");
             $stmt->execute([':username' => $usuarioInput]);
             $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
-            // En producción utilizar password_verify() si se usan contraseñas hasheadas.
+            // En producción: utilizar password_verify() si las contraseñas están cifradas.
             if ($usuario && $usuario['password'] === $claveInput) {
                 $_SESSION['user_id'] = $usuario['id'];
                 $_SESSION['username'] = $usuario['username'];
@@ -41,13 +41,11 @@ switch ($accion) {
         }
         break;
 
-    // Cierre de sesión.
     case 'logout':
         session_destroy();
         header("Location: index.php");
-        exit; // No se requiere break tras exit.
+        exit;
 
-    // Registro de un nuevo usuario.
     case 'register':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $nuevoUsuario = trim($_POST['username'] ?? '');
@@ -72,7 +70,7 @@ switch ($accion) {
                         ':name'     => $nombre,
                         ':email'    => $correo
                     ]);
-                    // Inicio de sesión automático para el nuevo usuario.
+                    // Iniciar sesión automáticamente para el nuevo usuario.
                     $stmt = $pdo->prepare("SELECT * FROM users WHERE username = :username LIMIT 1");
                     $stmt->execute([':username' => $nuevoUsuario]);
                     $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -87,8 +85,7 @@ switch ($accion) {
             }
         }
         break;
-
-    // Creación de un nuevo tema.
+        
     case 'crear_tema':
         if (checkRole(2) && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $tituloTema = trim($_POST['titulo'] ?? '');
@@ -98,8 +95,7 @@ switch ($accion) {
             }
         }
         break;
-
-    // Creación de un nuevo hilo en un tema.
+        
     case 'crear_hilo':
         if (checkRole(3) && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $temaId = (int)($_POST['tema_id'] ?? 0);
@@ -110,43 +106,43 @@ switch ($accion) {
             }
         }
         break;
-
-    // Creación de una publicación con opción a adjuntar imagen.
+        
     case 'crear_publicacion':
         if (checkRole(4) && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $hiloId    = (int)($_POST['hilo_id'] ?? 0);
             $contenido = trim($_POST['contenido'] ?? '');
             $padreId   = (int)($_POST['parent_id'] ?? 0);
             $usuarioId = $_SESSION['user_id'] ?? 0;
-            $imagen    = null;  // Valor por defecto: sin imagen.
-
-            // Procesar imagen si se ha subido.
+            $imagen    = null;  // Valor por defecto: sin imagen
+            
+            // Procesamiento del archivo de imagen
             if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
                 $fileTmpPath   = $_FILES['imagen']['tmp_name'];
                 $fileName      = $_FILES['imagen']['name'];
                 $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-                $allowedExts   = ['jpg', 'jpeg', 'png', 'gif'];
+                // Se especifican las extensiones permitidas
+                $allowedExts   = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
                 
                 if (in_array($fileExtension, $allowedExts)) {
-                    // Generar un nombre único para la imagen.
                     $newFileName = uniqid('img_', true) . '.' . $fileExtension;
                     $uploadDir   = __DIR__ . '/../uploads/';
+                    
                     if (!is_dir($uploadDir)) {
                         mkdir($uploadDir, 0755, true);
                     }
+                    
                     $destPath = $uploadDir . $newFileName;
                     
                     if (move_uploaded_file($fileTmpPath, $destPath)) {
                         $imagen = $newFileName;
                     } else {
-                        error_log("No se pudo mover el archivo de $fileTmpPath a $destPath");
+                        error_log("Error: No se pudo mover el archivo a $destPath");
                     }
                 } else {
-                    error_log("Extensión '$fileExtension' no permitida para la imagen.");
+                    error_log("Extensión '$fileExtension' no permitida. Sólo se admiten JPG, JPEG, PNG, GIF y WEBP.");
                 }
             }
             
-            // Insertar la publicación en la base de datos.
             if ($hiloId > 0 && !empty($contenido) && $usuarioId > 0) {
                 $stmt = $pdo->prepare("INSERT INTO publicaciones (hilo_id, user_id, parent_id, contenido, imagen, fecha)
                                        VALUES (:hilo_id, :user_id, :parent_id, :contenido, :imagen, :fecha)");
@@ -159,7 +155,6 @@ switch ($accion) {
                     ':fecha'      => date('Y-m-d H:i:s')
                 ]);
                 
-                // Redirigir al hilo correspondiente.
                 $stmtTema = $pdo->prepare("SELECT tema_id FROM hilos WHERE id = :hilo_id");
                 $stmtTema->execute([':hilo_id' => $hiloId]);
                 $temaId = $stmtTema->fetchColumn();
@@ -168,12 +163,11 @@ switch ($accion) {
             }
         }
         break;
-
-    // Operaciones del panel de administración (crear, eliminar y actualizar usuarios).
+        
     case 'panel':
         if (getUserRole() === 1) {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                // Crear nuevo usuario.
+                // Crear nuevo usuario
                 if (isset($_POST['panel_action']) && $_POST['panel_action'] === 'create_user') {
                     $usuarioNuevo = trim($_POST['username'] ?? '');
                     $claveNueva   = trim($_POST['password'] ?? '');
@@ -193,7 +187,7 @@ switch ($accion) {
                         ]);
                     }
                 }
-                // Eliminar usuario.
+                // Eliminar usuario
                 if (isset($_POST['panel_action']) && $_POST['panel_action'] === 'delete_user') {
                     $usuarioID = (int)($_POST['user_id'] ?? 0);
                     if ($usuarioID > 0 && $usuarioID !== (int)($_SESSION['user_id'] ?? 0)) {
@@ -201,7 +195,7 @@ switch ($accion) {
                         $stmt->execute([':id' => $usuarioID]);
                     }
                 }
-                // Actualizar rol de usuario.
+                // Actualizar rol
                 if (isset($_POST['panel_action']) && $_POST['panel_action'] === 'update_role') {
                     $usuarioID = (int)($_POST['user_id'] ?? 0);
                     $rolActualizado = (int)($_POST['new_role'] ?? 5);
@@ -217,4 +211,5 @@ switch ($accion) {
         }
         break;
 }
+
 ?>

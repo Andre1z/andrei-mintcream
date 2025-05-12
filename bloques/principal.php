@@ -8,7 +8,8 @@
  * - Muestra la interfaz del foro: listado de temas, hilos y publicaciones.
  *
  * En la parte de publicaciones se incluye:
- *   - Visualización de la imagen adjunta (si existe).
+ *   - Visualización de la imagen adjunta (si existe) con tamaño máximo ajustado.
+ *   - Funcionalidad de zoom al hacer clic en la imagen.
  *   - Formulario de publicación con opción de adjuntar imagen.
  *
  * @package Mintcream
@@ -192,7 +193,9 @@
                             <?php endif; ?>
                             <textarea name="contenido" placeholder="Escribe tu mensaje aquí" required></textarea>
                             <label for="imagen">Insertar imagen (opcional):</label>
-                            <input type="file" name="imagen" id="imagen" accept="image/*">
+                            <!-- Input file actualizado para admitir los formatos PNG, JPG, JPEG, GIF y WEBP -->
+                            <input type="file" name="imagen" id="imagen" accept="image/png, image/jpeg, image/gif, image/webp">
+                            <small>Solo se permiten archivos PNG, JPG, JPEG, GIF y WEBP.</small>
                             <button type="submit" class="btn-primary">Publicar</button>
                         </form>
                     <?php endif; ?>
@@ -201,3 +204,56 @@
         </aside>
     </div>
 <?php endif; ?>
+
+<!-- Modal para zoom de imagen -->
+<div id="imgModal" class="modal">
+    <span class="close-modal">&times;</span>
+    <img class="modal-content" id="modalImg">
+</div>
+
+<!-- Script de validación y zoom de imágenes -->
+<script>
+// Validación del input file: solo se permiten PNG, JPG, JPEG, GIF y WEBP.
+document.getElementById('imagen').addEventListener('change', function() {
+    var allowedExts = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
+    var file = this.files[0];
+    if (file) {
+        var ext = file.name.split('.').pop().toLowerCase();
+        if (allowedExts.indexOf(ext) === -1) {
+            alert("Solo se permiten archivos en formato: PNG, JPG, JPEG, GIF y WEBP.");
+            this.value = ""; // Limpia el campo si el archivo no es válido
+        }
+    }
+});
+
+// Modal para hacer zoom en la imagen al hacer clic
+var modal = document.getElementById("imgModal");
+var modalImg = document.getElementById("modalImg");
+var closeModal = document.getElementsByClassName("close-modal")[0];
+
+// Ajustamos los estilos de las imágenes de las publicaciones para que no se vean tan grandes.
+var postImages = document.querySelectorAll('.post-image-wrapper img');
+postImages.forEach(function(img) {
+    // Se establecen dimensiones máximas en el CSS (si no están definidos en principal.css)
+    img.style.maxWidth = "300px";
+    img.style.maxHeight = "300px";
+    img.style.cursor = "pointer";
+    // Al hacer clic en la imagen se abre el modal con la imagen ampliada.
+    img.addEventListener('click', function() {
+        modal.style.display = "flex";
+        modalImg.src = this.src;
+    });
+});
+
+// Cerrar el modal cuando se hace clic en la 'X'
+closeModal.onclick = function() {
+    modal.style.display = "none";
+};
+
+// Cerrar el modal al hacer clic fuera de la imagen
+modal.addEventListener("click", function(event) {
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
+});
+</script>
