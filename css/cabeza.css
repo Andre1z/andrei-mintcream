@@ -1,0 +1,6 @@
+/* cabeza.css */
+
+/* Scroll suave para toda la página */
+html {
+    scroll-behavior: smooth;
+}

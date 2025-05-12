@@ -1,0 +1,13 @@
+/* piedepagina.css */
+
+footer {
+    background-color: #263238; /* Tonalidad oscura */
+    padding: 15px 20px;
+    text-align: center;
+    color: #fff;
+    font-size: 16px;
+}
+
+footer p {
+    margin: 0;
+}

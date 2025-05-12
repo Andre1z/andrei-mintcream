@@ -1,0 +1,35 @@
+/* global.css */
+
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Tipografía y fondo global */
+body {
+    font-family: 'Helvetica', Arial, sans-serif;
+    background-color: #f5f5f5; /* Fondo claro */
+    color: #333;
+    line-height: 1.6;
+    font-size: 16px;
+}
+
+/* Enlaces */
+a {
+    text-decoration: none;
+    color: #00bcd4; /* Acente vibrante teal */
+}
+
+a:hover {
+    color: #008ba3;
+}
+
+/* Contenedor general para centrar contenido */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}

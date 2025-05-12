@@ -1,0 +1,186 @@
+/* principal.css */
+
+/* Estilos para formularios */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+textarea,
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: #00bcd4;
+    box-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
+}
+
+/* Botones generales */
+button, .btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Variantes de botones */
+.btn-primary {
+    background-color: #4caf50; /* Verde */
+    color: #fff;
+}
+.btn-primary:hover {
+    background-color: #43a047;
+}
+
+.btn-secondary {
+    background-color: #f44336; /* Rojo */
+    color: #fff;
+}
+.btn-secondary:hover {
+    background-color: #e53935;
+}
+
+.btn-danger {
+    background-color: #ff5252;
+    color: #fff;
+}
+.btn-danger:hover {
+    background-color: #ff1744;
+}
+
+.btn-small {
+    padding: 6px 10px;
+    font-size: 14px;
+    background-color: #00bcd4;
+    color: #fff;
+}
+.btn-small:hover {
+    background-color: #008ba3;
+}
+
+/* Secciones generales de la página (registro, panel, foro) */
+.registration-section,
+.admin-panel,
+.forum-container {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 6px;
+    margin: 20px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Layout del foro en tres columnas */
+.forum-container {
+    display: flex;
+    gap: 20px;
+}
+
+/* Columna de Temas */
+.sidebar-topics {
+    flex: 1;
+}
+
+/* Columna de Hilos */
+.middle-section {
+    flex: 2;
+}
+
+/* Columna de Publicaciones */
+.sidebar-posts {
+    flex: 1.5;
+}
+
+/* Listas para temas, hilos y publicaciones */
+.topic-list,
+.thread-list,
+.post-list {
+    list-style: none;
+    margin-top: 10px;
+}
+
+.topic-list li,
+.thread-list li {
+    margin: 8px 0;
+    padding: 10px;
+    background-color: #e0f7fa;
+    border-radius: 4px;
+}
+
+.topic-list li a,
+.thread-list li a {
+    font-size: 16px;
+    color: #00796b;
+    font-weight: bold;
+}
+
+.topic-list li a:hover,
+.thread-list li a:hover {
+    color: #004d40;
+}
+
+/* Estilizado de publicaciones */
+.post-item {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.post-author {
+    font-weight: bold;
+    color: #00897b;
+}
+
+.post-date {
+    font-size: 14px;
+    color: #757575;
+}
+
+.reply-link {
+    font-size: 14px;
+    color: #ff5722;
+    text-decoration: none;
+}
+
+.reply-link:hover {
+    text-decoration: underline;
+}
+
+/* Formularios en línea */
+.inline-form {
+    display: inline-flex;
+    gap: 5px;
+    align-items: center;
+}
+
+/* Tabla para el listado de usuarios en el panel de administración */
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.user-table th,
+.user-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.user-table th {
+    background-color: #00bcd4;
+    color: #fff;
+}
