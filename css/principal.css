@@ -1,5 +1,12 @@
 /* principal.css */
 
+/* Aseguramos que html y body ocupen el 100% de la altura */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
 /* Estilos para formularios */
 input[type="text"],
 input[type="password"],
@@ -70,18 +77,22 @@ button, .btn {
 /* Secciones generales de la página (registro, panel, foro) */
 .registration-section,
 .admin-panel,
-.forum-container {
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 6px;
-    margin: 20px 0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Layout del foro en tres columnas */
+/* Actualización del contenedor principal del foro:
+   En lugar de un alto fijo de 600px se usa calc() para ajustar su altura 
+   al viewport (restando 150px para cabecera y footer) */
 .forum-container {
     display: flex;
-    gap: 20px;
+    height: calc(100vh - 150px);
+    max-height: calc(100vh - 150px);
+}
+
+/* Cada columna (aside y section) en el contenedor tendrá su propio scroll */
+.forum-container > aside,
+.forum-container > section {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
 /* Columna de Temas */
@@ -184,10 +195,10 @@ button, .btn {
     background-color: #00bcd4;
     color: #fff;
 }
+
 /* Estilos para el modal (pop-up centrado) de zoom de imágenes */
 .modal {
-    /* El overlay sigue ocupando toda la pantalla para bloquear el background,
-       pero el contenedor del contenido se posiciona de forma independiente */
+    /* El overlay sigue ocupando toda la pantalla para bloquear el background */
     display: none;
     position: fixed;
     z-index: 1000;
@@ -199,12 +210,12 @@ button, .btn {
 }
 
 .modal-content-container {
-    /* En lugar de usar flex para centrar, usaremos posición fija y transform */
+    /* Posicionamiento fijo centrado con transform */
     position: fixed;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    width: 600px;         /* Ancho fijo (puedes ajustarlo) */
+    width: 600px;         /* Ancho fijo, ajustable */
     max-width: 90%;       /* No exceder el 90% del ancho de la pantalla */
     background: #fff;
     padding: 10px;

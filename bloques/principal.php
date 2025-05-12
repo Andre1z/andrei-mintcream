@@ -112,6 +112,7 @@
     </section>
 
 <?php else: ?>
+    <!-- El contenedor principal del foro -->
     <div class="forum-container">
         <aside class="sidebar-topics">
             <section class="topic-section">
@@ -233,7 +234,7 @@ var modal = document.getElementById("imgModal");
 var modalImg = document.getElementById("modalImg");
 var closeModal = document.getElementsByClassName("close-modal")[0];
 
-// Añadimos el manejador de clic a cada imagen de publicación
+// Añadimos el manejador de clic a cada imagen de publicación para activar el modal en el centro
 var postImages = document.querySelectorAll('.post-image-wrapper img');
 postImages.forEach(function(img) {
     img.addEventListener('click', function() {
@@ -247,7 +248,7 @@ closeModal.onclick = function() {
     modal.style.display = "none";
 };
 
-// Cerrar el modal si se hace clic fuera del contenedor de imagen
+// Cierra el modal si se hace clic fuera del contenedor de la imagen
 modal.addEventListener("click", function(event) {
     if (event.target === modal) {
         modal.style.display = "none";
