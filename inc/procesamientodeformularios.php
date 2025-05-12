@@ -12,11 +12,11 @@
  *   - crear_publicacion: Creación de una publicación con opción de adjuntar imagen.
  *   - panel: Operaciones en el panel de administración (crear, eliminar o actualizar usuarios).
  *
- * NOTA: En producción se debe usar password_hash()/password_verify() para las contraseñas
- *       y realizar una validación/ sanitización más exhaustiva de los datos.
+ * NOTA: En producción se deben usar password_hash()/password_verify() para las contraseñas, 
+ *       y realizar una validación/sanitización más exhaustiva de los datos.
  *
- * Se ha actualizado la acción "crear_publicacion" para permitir solo archivos con las extensiones:
- * jpg, jpeg, png, gif y webp.
+ * En la acción "crear_publicacion", si se sube una imagen, esta se valida, se mueve a la carpeta uploads
+ * y se guarda en la base de datos como texto (el nombre del archivo).
  */
 
 $accion = $_GET['accion'] ?? '';
@@ -61,8 +61,10 @@ switch ($accion) {
                 if ($stmt->fetchColumn() > 0) {
                     echo "<p style='color:red;'>El nombre de usuario ya existe.</p>";
                 } else {
-                    $stmt = $pdo->prepare("INSERT INTO users (username, password, role, name, email)
-                                           VALUES (:username, :password, :role, :name, :email)");
+                    $stmt = $pdo->prepare(
+                        "INSERT INTO users (username, password, role, name, email)
+                         VALUES (:username, :password, :role, :name, :email)"
+                    );
                     $stmt->execute([
                         ':username' => $nuevoUsuario,
                         ':password' => $nuevaClave, // En producción: usar password_hash()
@@ -113,14 +115,13 @@ switch ($accion) {
             $contenido = trim($_POST['contenido'] ?? '');
             $padreId   = (int)($_POST['parent_id'] ?? 0);
             $usuarioId = $_SESSION['user_id'] ?? 0;
-            $imagen    = null;  // Valor por defecto: sin imagen
+            $imagen    = null;  // Por defecto, sin imagen
             
-            // Procesamiento del archivo de imagen
+            // Procesamiento de la imagen: se valida que se permita el formato, se mueve a "uploads" y se guarda el nombre.
             if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
                 $fileTmpPath   = $_FILES['imagen']['tmp_name'];
                 $fileName      = $_FILES['imagen']['name'];
                 $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-                // Se especifican las extensiones permitidas
                 $allowedExts   = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
                 
                 if (in_array($fileExtension, $allowedExts)) {
@@ -134,18 +135,21 @@ switch ($accion) {
                     $destPath = $uploadDir . $newFileName;
                     
                     if (move_uploaded_file($fileTmpPath, $destPath)) {
+                        // Almacenamos en la variable el nombre del archivo (texto)
                         $imagen = $newFileName;
                     } else {
                         error_log("Error: No se pudo mover el archivo a $destPath");
                     }
                 } else {
-                    error_log("Extensión '$fileExtension' no permitida. Sólo se admiten JPG, JPEG, PNG, GIF y WEBP.");
+                    error_log("Extensión '$fileExtension' no permitida. Solo se aceptan JPG, JPEG, PNG, GIF y WEBP.");
                 }
             }
             
             if ($hiloId > 0 && !empty($contenido) && $usuarioId > 0) {
-                $stmt = $pdo->prepare("INSERT INTO publicaciones (hilo_id, user_id, parent_id, contenido, imagen, fecha)
-                                       VALUES (:hilo_id, :user_id, :parent_id, :contenido, :imagen, :fecha)");
+                $stmt = $pdo->prepare(
+                    "INSERT INTO publicaciones (hilo_id, user_id, parent_id, contenido, imagen, fecha)
+                     VALUES (:hilo_id, :user_id, :parent_id, :contenido, :imagen, :fecha)"
+                );
                 $stmt->execute([
                     ':hilo_id'    => $hiloId,
                     ':user_id'    => $usuarioId,
@@ -176,8 +180,10 @@ switch ($accion) {
                     $emailNuevo   = trim($_POST['email'] ?? '');
                     
                     if (!empty($usuarioNuevo) && !empty($claveNueva)) {
-                        $stmt = $pdo->prepare("INSERT INTO users (username, password, role, name, email)
-                                               VALUES (:username, :password, :role, :name, :email)");
+                        $stmt = $pdo->prepare(
+                            "INSERT INTO users (username, password, role, name, email)
+                             VALUES (:username, :password, :role, :name, :email)"
+                        );
                         $stmt->execute([
                             ':username' => $usuarioNuevo,
                             ':password' => $claveNueva, // En producción: usar password_hash()
@@ -211,5 +217,4 @@ switch ($accion) {
         }
         break;
 }
-
 ?>
