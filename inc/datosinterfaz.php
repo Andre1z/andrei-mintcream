@@ -75,7 +75,13 @@ if (isset($_GET['reply'])) {
     $replyId = (int)$_GET['reply'];
     if ($replyId > 0) {
         try {
-            $stmt = $pdo->prepare("SELECT * FROM publicaciones WHERE id = :reply_id");
+            // Se une con la tabla users para obtener el nombre de usuario
+            $stmt = $pdo->prepare("
+                SELECT p.*, u.username 
+                FROM publicaciones p
+                JOIN users u ON p.user_id = u.id
+                WHERE p.id = :reply_id
+            ");
             $stmt->execute([':reply_id' => $replyId]);
             $reply_message = $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $ex) {
