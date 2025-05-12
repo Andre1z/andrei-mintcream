@@ -1,22 +1,21 @@
 <?php
 /**
- * bloques/principal.php
+ * principal.php
  *
- * Renderiza la sección principal de la interfaz. Dependiendo del valor
- * de la variable $accion se muestran:
- * - El formulario de registro.
- * - El panel de administración (para Superadmin).
- * - La interfaz del foro con lista de temas, hilos y publicaciones.
+ * Renderiza la sección principal de la interfaz.
+ * - Muestra el formulario de registro si $accion == 'register'.
+ * - Muestra el panel de administración para Superadmin.
+ * - Muestra la interfaz del foro: listado de temas, hilos y publicaciones.
  *
- * Se ha actualizado el bloque de publicaciones para permitir la inserción de imágenes
- * y para mostrar una flecha (→) junto al nombre del usuario en el reply.
+ * En la parte de publicaciones se incluye:
+ *   - Visualización de la imagen adjunta (si existe).
+ *   - Formulario de publicación con opción de adjuntar imagen.
  *
  * @package Mintcream
  */
 ?>
 
 <?php if ($accion === 'register'): ?>
-    <!-- Registro de Usuario -->
     <section class="registration-section">
         <h2>Registro de Usuario</h2>
         <form action="?accion=register" method="POST" class="registration-form">
@@ -29,7 +28,6 @@
     </section>
 
 <?php elseif ($accion === 'panel' && getUserRole() === 1): ?>
-    <!-- Panel de Administración para Superadmin -->
     <section class="admin-panel">
         <h2>Panel de Administración</h2>
         <div class="create-user">
@@ -87,7 +85,6 @@
                             <td><?php echo htmlspecialchars($user_item['email'] ?? ''); ?></td>
                             <td><?php echo getRoleName($user_item['role']); ?></td>
                             <td>
-                                <!-- Actualizar rol -->
                                 <form method="POST" action="?accion=panel" class="inline-form">
                                     <input type="hidden" name="panel_action" value="update_role">
                                     <input type="hidden" name="user_id" value="<?php echo $user_item['id']; ?>">
@@ -100,7 +97,6 @@
                                     </select>
                                     <button type="submit" class="btn-secondary">Actualizar</button>
                                 </form>
-                                <!-- Eliminar usuario -->
                                 <form method="POST" action="?accion=panel" class="inline-form">
                                     <input type="hidden" name="panel_action" value="delete_user">
                                     <input type="hidden" name="user_id" value="<?php echo $user_item['id']; ?>">
@@ -115,9 +111,7 @@
     </section>
 
 <?php else: ?>
-    <!-- Interfaz del Foro -->
     <div class="forum-container">
-        <!-- Columna de Temas -->
         <aside class="sidebar-topics">
             <section class="topic-section">
                 <h2>Temas</h2>
@@ -138,8 +132,6 @@
                 <?php endif; ?>
             </section>
         </aside>
-
-        <!-- Columna de Hilos -->
         <section class="middle-section">
             <?php if ($tema_seleccionado > 0): ?>
                 <div class="thread-wrapper">
@@ -163,8 +155,6 @@
                 </div>
             <?php endif; ?>
         </section>
-
-        <!-- Columna de Publicaciones -->
         <aside class="sidebar-posts">
             <?php if ($hilo_seleccionado > 0): ?>
                 <div class="post-wrapper">
@@ -189,7 +179,6 @@
                         <?php endforeach; ?>
                     </ul>
                     <?php if (checkRole(4)): ?>
-                        <!-- Formulario para publicar mensaje con opción de insertar imagen -->
                         <form action="?accion=crear_publicacion" method="POST" class="post-form" enctype="multipart/form-data">
                             <input type="hidden" name="hilo_id" value="<?php echo $hilo_seleccionado; ?>">
                             <?php if ($reply_message): ?>
