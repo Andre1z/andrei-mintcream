@@ -22,9 +22,32 @@
 ## Estructura del Proyecto
 
 La estructura de carpetas del proyecto es la siguiente:
-´´´
-mintcream-forum/ ├── bloques/ # Archivos de interfaz (cabeza.php, cabecera.php, principal.php, piedepagina.php) ├── css/ # Hojas de estilo CSS (principal.css, etc.) ├── databases/ # Base de datos y scripts de inicialización (mintcream.db, inc/inicializarsqlite.php) ├── inc/ # Archivos de funcionalidad (funciones.php, datosinterfaz.php, procesamientodeformularios.php, etc.) ├── uploads/ # Carpeta donde se almacenan las imágenes subidas ├── index.php # Punto de entrada de la aplicación └── README.md # Este archivo
-´´´
+```
+mintcream-forum/
+├── README.md                   # Documentación e instrucciones del proyecto
+├── index.php                   # Punto de entrada principal de la aplicación
+├── bloques/                    # Bloques o "partials" de la interfaz
+│   ├── cabeza.php              # Contiene el DOCTYPE, head y apertura del body
+│   ├── cabecera.php            # Encabezado y barra de navegación
+│   ├── principal.php           # Sección principal (registro, foro, panel)
+│   └── piedepagina.php         # Pie de página, cierre del body y html
+├── css/                        # Hojas de estilo CSS
+│   ├── global.css              # Estilos globales y reset
+│   ├── cabeza.css              # Estilos para el head
+│   ├── cabecera.css            # Estilos para el header y navegación
+│   ├── principal.css           # Estilos para las secciones principales, formularios, modal, scroll, etc.
+│   └── piedepagina.css         # Estilos para el footer
+├── databases/                  # Base de datos y scripts de inicialización
+│   └── mintcream.db            # Archivo de base de datos SQLite (o scripts para MySQL)
+├── inc/                        # Lógica del servidor y utilidades
+│   ├── datosinterfaz.php       # Prepara y recopila datos para la interfaz (temas, hilos, posts)
+│   ├── funciones.php           # Funciones de ayuda (manejo de roles, validaciones)
+│   ├── inicializarsqlite.php   # Conexión e inicialización de SQLite (creación de tablas, etc.)
+│   └── procesamientodeformularios.php  # Procesa las solicitudes de formularios (login, registro, creación de posts, etc.)
+├── uploads/                    # Carpeta para almacenar archivos e imágenes subidas
+│   └── (archivos de imagen, etc.)
+└── mintcream.png               # Imagen/logo del proyecto (opcional)
+```
 
 
 ## Requisitos
@@ -49,21 +72,21 @@ mintcream-forum/ ├── bloques/ # Archivos de interfaz (cabeza.php, cabecera
 
 3. **Establecer permisos:**
 
-- Verifica que la carpeta ´´´ uploads ´´´ existe y tiene permisos de escritura.
+- Verifica que la carpeta ``` uploads ``` existe y tiene permisos de escritura.
 
-- Si utilizas **SQLite**, asegúrate de que la carpeta ´´´ databases ´´´ tenga permisos de escritura.
+- Si utilizas **SQLite**, asegúrate de que la carpeta ``` databases ``` tenga permisos de escritura.
 
 4. **Acceso a la aplicación:**
 
 - Inicia el servidor web.
 
--  Navega a ´´´ http://localhost/andrei-mintcream ´´´ (o la URL configurada según tu entorno).
+-  Navega a ``` http://localhost/andrei-mintcream ``` (o la URL configurada según tu entorno).
 
 ## Uso
 
 - **Registro y Autenticación:** Los nuevos usuarios pueden registrarse mediante el formulario de registro y luego iniciar sesión para participar en el foro.
 
-- **Participación en el Foro:** Los usuarios autenticados pueden crear temas, hilos y publicaciones. Al adjuntar imágenes, el nombre del archivo se almacena en la base de datos, y la imagen se guarda en la carpeta ´´´uploads´´´.
+- **Participación en el Foro:** Los usuarios autenticados pueden crear temas, hilos y publicaciones. Al adjuntar imágenes, el nombre del archivo se almacena en la base de datos, y la imagen se guarda en la carpeta ```uploads```.
 
 - **Zoom de Imágenes:** Al pulsar una imagen en una publicación, se abrirá un modal centrado en la pantalla que permite verla en mayor detalle.
 
