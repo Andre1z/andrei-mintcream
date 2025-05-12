@@ -32,26 +32,26 @@ try {
 }
 
 /**
- * 2. Obtener el ID del tema seleccionado (si se ha indicado en la URL).
+ * 2. Obtener el ID del tema seleccionado (usando la nomenclatura que usará principal.php).
  */
-$temaSeleccionado = isset($_GET['tema_id']) ? (int)$_GET['tema_id'] : 0;
+$tema_seleccionado = isset($_GET['tema_id']) ? (int)$_GET['tema_id'] : 0;
 $hilos = [];
-if ($temaSeleccionado > 0) {
+if ($tema_seleccionado > 0) {
     try {
         $stmt = $pdo->prepare("SELECT * FROM hilos WHERE tema_id = :tema_id ORDER BY id DESC");
-        $stmt->execute([':tema_id' => $temaSeleccionado]);
+        $stmt->execute([':tema_id' => $tema_seleccionado]);
         $hilos = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $ex) {
-        error_log('Error al obtener hilos para el tema ' . $temaSeleccionado . ': ' . $ex->getMessage());
+        error_log('Error al obtener hilos para el tema ' . $tema_seleccionado . ': ' . $ex->getMessage());
     }
 }
 
 /**
- * 3. Obtener el ID del hilo seleccionado (si se ha indicado en la URL).
+ * 3. Obtener el ID del hilo seleccionado (nomenclatura ajustada).
  */
-$hiloSeleccionado = isset($_GET['hilo_id']) ? (int)$_GET['hilo_id'] : 0;
+$hilo_seleccionado = isset($_GET['hilo_id']) ? (int)$_GET['hilo_id'] : 0;
 $publicaciones = [];
-if ($hiloSeleccionado > 0) {
+if ($hilo_seleccionado > 0) {
     try {
         $stmt = $pdo->prepare("
             SELECT p.*, u.username 
@@ -60,10 +60,10 @@ if ($hiloSeleccionado > 0) {
             WHERE p.hilo_id = :hilo_id
             ORDER BY p.id ASC
         ");
-        $stmt->execute([':hilo_id' => $hiloSeleccionado]);
+        $stmt->execute([':hilo_id' => $hilo_seleccionado]);
         $publicaciones = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $ex) {
-        error_log('Error al obtener publicaciones para el hilo ' . $hiloSeleccionado . ': ' . $ex->getMessage());
+        error_log('Error al obtener publicaciones para el hilo ' . $hilo_seleccionado . ': ' . $ex->getMessage());
     }
 }
 

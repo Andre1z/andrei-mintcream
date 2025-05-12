@@ -13,7 +13,7 @@
     <nav class="main-nav">
         <div class="nav-brand">
             <img src="mintcream.png" alt="Logo Mintcream" id="logo">
-            <h1><a href="index.php">Jocarsa | Mintcream</a></h1>
+            <h1><a href="index.php">Andrei | Mintcream</a></h1>
         </div>
         <div class="nav-actions">
             <?php if (isset($_SESSION['username'])): ?>

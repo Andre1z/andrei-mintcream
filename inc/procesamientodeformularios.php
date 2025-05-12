@@ -55,8 +55,8 @@ switch ($accion) {
         // Destruye la sesión actual
         session_destroy();
         header("Location: index.php");
-        exit;
-        break;
+        exit;  // No se requiere break; ya que exit detiene la ejecución.
+
 
     /**
      * Caso "register": procesa el registro de un nuevo usuario.

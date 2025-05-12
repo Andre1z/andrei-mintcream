@@ -15,7 +15,7 @@
     <!-- Meta tags esenciales -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mintcream - Jocarsa</title>
+    <title>Mintcream - Andrei</title>
     <!-- Carga de estilos globales y específicos por bloque -->
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/cabeza.css">
