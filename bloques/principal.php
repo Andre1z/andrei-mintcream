@@ -1,22 +1,24 @@
 <?php
 /**
- * principal.php
+ * bloques/principal.php
  *
- * Renderiza la sección principal de la interfaz. Dependiendo del valor de la variable
- * $accion, se muestra:
- * - El formulario de registro de usuario.
+ * Renderiza la sección principal de la interfaz. Dependiendo del valor
+ * de la variable $accion se muestran:
+ * - El formulario de registro.
  * - El panel de administración (para Superadmin).
- * - La interfaz del foro con el listado de temas, hilos y publicaciones.
+ * - La interfaz del foro con lista de temas, hilos y publicaciones.
+ *
+ * Se ha actualizado el bloque de publicaciones para permitir la inserción de imágenes
+ * y para mostrar una flecha (→) junto al nombre del usuario en el reply.
  *
  * @package Mintcream
  */
 ?>
 
 <?php if ($accion === 'register'): ?>
-    <!-- Sección de Registro de Usuario -->
+    <!-- Registro de Usuario -->
     <section class="registration-section">
         <h2>Registro de Usuario</h2>
-        <!-- Formulario para registrar un nuevo usuario -->
         <form action="?accion=register" method="POST" class="registration-form">
             <input type="text" name="username" placeholder="Nombre de usuario" required>
             <input type="password" name="password" placeholder="Contraseña" required>
@@ -30,12 +32,9 @@
     <!-- Panel de Administración para Superadmin -->
     <section class="admin-panel">
         <h2>Panel de Administración</h2>
-
-        <!-- Formulario para crear un nuevo usuario -->
         <div class="create-user">
             <h3>Crear Nuevo Usuario</h3>
             <form method="POST" action="?accion=panel" class="form-row">
-                <!-- Acción indicada para procesar la creación -->
                 <input type="hidden" name="panel_action" value="create_user">
                 <div>
                     <label for="nuevo_usuario">Usuario:</label>
@@ -66,8 +65,6 @@
                 <button type="submit" class="btn-primary">Crear Usuario</button>
             </form>
         </div>
-
-        <!-- Listado de usuarios registrados y formularios para actualizar o eliminar -->
         <div class="user-list">
             <h3>Usuarios Registrados</h3>
             <table class="user-table">
@@ -90,7 +87,7 @@
                             <td><?php echo htmlspecialchars($user_item['email'] ?? ''); ?></td>
                             <td><?php echo getRoleName($user_item['role']); ?></td>
                             <td>
-                                <!-- Formulario para actualizar el rol del usuario -->
+                                <!-- Actualizar rol -->
                                 <form method="POST" action="?accion=panel" class="inline-form">
                                     <input type="hidden" name="panel_action" value="update_role">
                                     <input type="hidden" name="user_id" value="<?php echo $user_item['id']; ?>">
@@ -103,7 +100,7 @@
                                     </select>
                                     <button type="submit" class="btn-secondary">Actualizar</button>
                                 </form>
-                                <!-- Formulario para eliminar el usuario -->
+                                <!-- Eliminar usuario -->
                                 <form method="POST" action="?accion=panel" class="inline-form">
                                     <input type="hidden" name="panel_action" value="delete_user">
                                     <input type="hidden" name="user_id" value="<?php echo $user_item['id']; ?>">
@@ -118,14 +115,12 @@
     </section>
 
 <?php else: ?>
-    <!-- Interfaz principal del foro -->
+    <!-- Interfaz del Foro -->
     <div class="forum-container">
-      
         <!-- Columna de Temas -->
         <aside class="sidebar-topics">
             <section class="topic-section">
                 <h2>Temas</h2>
-                <!-- Lista de temas existentes -->
                 <ul class="topic-list">
                     <?php foreach ($temas as $tema): ?>
                         <li>
@@ -135,7 +130,6 @@
                         </li>
                     <?php endforeach; ?>
                 </ul>
-                <!-- Formulario para crear un nuevo tema. Visible solo si el usuario tiene permiso -->
                 <?php if (checkRole(2)): ?>
                     <form action="?accion=crear_tema" method="POST" class="topic-form inline-form">
                         <input type="text" name="titulo" placeholder="Nuevo Tema" required>
@@ -150,7 +144,6 @@
             <?php if ($tema_seleccionado > 0): ?>
                 <div class="thread-wrapper">
                     <h2>Hilos</h2>
-                    <!-- Lista de hilos correspondientes al tema seleccionado -->
                     <ul class="thread-list">
                         <?php foreach ($hilos as $hilo): ?>
                             <li>
@@ -160,7 +153,6 @@
                             </li>
                         <?php endforeach; ?>
                     </ul>
-                    <!-- Formulario para crear un nuevo hilo. Visible solo si el usuario tiene permiso -->
                     <?php if (checkRole(3)): ?>
                         <form action="?accion=crear_hilo" method="POST" class="thread-form inline-form">
                             <input type="hidden" name="tema_id" value="<?php echo $tema_seleccionado; ?>">
@@ -177,7 +169,6 @@
             <?php if ($hilo_seleccionado > 0): ?>
                 <div class="post-wrapper">
                     <h2>Publicaciones</h2>
-                    <!-- Lista de publicaciones para el hilo seleccionado -->
                     <ul class="post-list">
                         <?php foreach ($publicaciones as $pub): ?>
                             <li class="post-item">
@@ -188,18 +179,22 @@
                                 </div>
                                 <div class="post-content">
                                     <?php echo nl2br(htmlspecialchars($pub['contenido'])); ?>
+                                    <?php if (!empty($pub['imagen'])): ?>
+                                        <div class="post-image-wrapper">
+                                            <img src="uploads/<?php echo htmlspecialchars($pub['imagen']); ?>" alt="Imagen de la publicación" class="post-image">
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             </li>
                         <?php endforeach; ?>
                     </ul>
-                    <!-- Formulario para publicar un nuevo mensaje -->
                     <?php if (checkRole(4)): ?>
-                        <form action="?accion=crear_publicacion" method="POST" class="post-form">
+                        <!-- Formulario para publicar mensaje con opción de insertar imagen -->
+                        <form action="?accion=crear_publicacion" method="POST" class="post-form" enctype="multipart/form-data">
                             <input type="hidden" name="hilo_id" value="<?php echo $hilo_seleccionado; ?>">
-                            <!-- Si se está respondiendo a un mensaje, mostrar información de la respuesta -->
                             <?php if ($reply_message): ?>
                                 <p class="reply-info">
-                                    Respondiendo a <?php echo htmlspecialchars($reply_message['username']); ?>:
+                                    &#x2192; <?php echo htmlspecialchars($reply_message['username'] ?? 'Desconocido'); ?>:
                                     <em><?php echo substr($reply_message['contenido'], 0, 50); ?>...</em>
                                 </p>
                                 <input type="hidden" name="parent_id" value="<?php echo $reply_message['id']; ?>">
@@ -207,6 +202,8 @@
                                 <input type="hidden" name="parent_id" value="0">
                             <?php endif; ?>
                             <textarea name="contenido" placeholder="Escribe tu mensaje aquí" required></textarea>
+                            <label for="imagen">Insertar imagen (opcional):</label>
+                            <input type="file" name="imagen" id="imagen" accept="image/*">
                             <button type="submit" class="btn-primary">Publicar</button>
                         </form>
                     <?php endif; ?>
